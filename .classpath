@@ -16,5 +16,9 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="twitter4j-async-3.0.3.jar"/>
+	<classpathentry kind="lib" path="twitter4j-core-3.0.3.jar"/>
+	<classpathentry kind="lib" path="twitter4j-media-support-3.0.3.jar"/>
+	<classpathentry kind="lib" path="twitter4j-stream-3.0.3.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
