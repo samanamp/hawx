@@ -11,23 +11,32 @@ import twitter4j.json.DataObjectFactory;
 
 public class GeoTracker {
 
-	static String ConsumerKey = "t7zZY1v1NUIjbaX27dGw";
-	static String ConsumerSecret = "6bbcC84YlVBMzGJh9fOyVctrYnbOuLzOG4BkOVEyZ4";
-	static String oauth_token = "1364169276-648ioFHIqQuPyNcA5tFqstRXCN0sU5DICpTL5dD";
-	static String oauth_token_secret = "Fgwjwa38annsBueTmxSPXvUwNknvvw4ztYwCyyYj9k";
+	static private String ConsumerKey = "";
+	static private String ConsumerSecret = "";
+	static private String oauth_token = "";
+	static private String oauth_token_secret = "";
+	private String ip;
+	private String dbName;
+	private double [][] locations;
 	
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public GeoTracker(String ip, String dbName, double [][] locations){
+		this.ip = ip;
+		this.dbName = dbName;
+		this.locations = locations;		
+	}
+	
+	public void startTracking(){
 		StatusListener listener = new StatusListener() {
-			DBHandler dbHandler = new DBHandler();
-			long count = 0;
+			DBHandler dbHandler = new DBHandler(ip, dbName);
+			WebMaker wm = new WebMaker(locations);
+			int count = 0;
 			@Override
             public void onStatus(Status status) {
             	String rawTweet = DataObjectFactory.getRawJSON(status);
             	dbHandler.addNewTweet(rawTweet, status.getId());
             	GeoLocation gl = status.getGeoLocation();
             	System.out.println("!!"+(++count)+"------"+gl.getLatitude()+","+gl.getLongitude());
+            	wm.update(count);
                 System.out.println(status.getText());
             }
 
@@ -68,17 +77,32 @@ public class GeoTracker {
 		TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
 		twitterStream.addListener(listener);
 		FilterQuery fq = new FilterQuery();
-		
-		double lat = -34;
-	    double longitude = 150.9;
-	    double lat1 = lat - 0.5;
-	    double longitude1 = longitude - 0.5;
-	    double lat2 = lat + 0.5;
-	    double longitude2 = longitude + 0.5;
-	    double[][] locations= {{longitude1, lat1}, {longitude2, lat2}};
 	    
 		fq.locations(locations);
 		twitterStream.filter(fq);
+	}
+
+	public static void main(String[] args) {
+
+	    
+	    if(args.length < 4){
+	    	System.out.println("Use the program as follow:\n java -jar GeoTracker.jar ip databaseName lat1 long1 lat2 long2");
+	    	System.exit(0);
+	    }
+	    String ip = args[0];
+	    String databaseName = args[1];
+	    
+	    double lat1 = Double.parseDouble(args[2]);
+	    double longitude1 = Double.parseDouble(args[3]);
+	    double lat2 = Double.parseDouble(args[4]);
+	    double longitude2 = Double.parseDouble(args[5]);
+	    double[][] locations= {{longitude1, lat1}, {longitude2, lat2}};
+
+	    GeoTracker gt = new GeoTracker(ip, databaseName, locations);
+	    gt.startTracking();
+	    
+	    
+
 	}
 
 }

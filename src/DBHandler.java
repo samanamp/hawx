@@ -5,9 +5,9 @@ import com.google.gson.JsonObject;
 
 public class DBHandler {
 	CouchDbClient dbClient;
-	public DBHandler(){
+	public DBHandler(String ip, String dbName){
 
-		dbClient = new CouchDbClient("twitterdata", true, "http", "127.0.0.1", 5984, null, null);
+		dbClient = new CouchDbClient(dbName, true, "http", ip, 5984, null, null);
 	}
 	
 	public void addNewTweet(String tweet, long id){
